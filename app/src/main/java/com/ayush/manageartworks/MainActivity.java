@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         ViewerConfig config = new ViewerConfig.Builder().openUrlCachePath(this.getCacheDir().getAbsolutePath()).build();
-        final Uri fileLink = Uri.parse("http://www.africau.edu/images/default/sample.pdf");
+        final Uri fileLink = Uri.parse("https://pdftron.s3.amazonaws.com/downloads/pl/PDFTRON_mobile_about.pdf");
         DocumentActivity.openDocument(this, fileLink, config);
     }
 }
