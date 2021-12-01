@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -14,9 +15,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ManageArtworks"
         android:usesCleartextTraffic="true" >
-        <activity
-            android:name=".DocumentViewer"
-            android:exported="false" />
 
         <meta-data
             android:name="pdftron_license_key"
