@@ -23,6 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
 import com.pdftron.pdf.config.ViewerConfig;
 import com.pdftron.pdf.controls.DocumentActivity;
 
@@ -31,6 +34,7 @@ import org.apache.commons.io.FilenameUtils;
 
 public class MainActivity extends AppCompatActivity {
 
+    PyObject pyObject;
     private static final int LOAD_REQUEST_CODE = 1;
     private static final String TAG = "Main Activity Log";
     public static Context context;
@@ -42,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
         config = new ViewerConfig.Builder().openUrlCachePath(this.getCacheDir().getAbsolutePath()).build();
+
+        //start python scripts
+
+        runPython(this);
     }
 
     public void loadPdfFromStorage(View view) {
@@ -137,4 +145,14 @@ public class MainActivity extends AppCompatActivity {
         return file;
     }
 
+    //*****Python*****//
+    public void runPython(Context context) {
+        if (!Python.isStarted()) {
+            Python.start(new AndroidPlatform(context));
+        }
+        Python py = Python.getInstance();
+        pyObject = py.getModule("hello_world");
+        String msg = pyObject.callAttr("hello").toString();
+        Toast.makeText(context,"This came from pytgon :: "+msg,Toast.LENGTH_SHORT).show();
+    }
 }
