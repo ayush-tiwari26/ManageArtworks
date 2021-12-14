@@ -27,11 +27,10 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(data==null){
-            Intent intent=new Intent(this,MainActivity.class);
+        if (data == null) {
+            Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
-        }
-        else if (requestCode == CAMERA_PIC_REQUEST) {
+        } else if (requestCode == CAMERA_PIC_REQUEST) {
             Bitmap image = (Bitmap) data.getExtras().get("data");
             ImageView imageview = (ImageView) findViewById(R.id.imageView); //sets imageview as the bitmap
             imageview.setImageBitmap(image);
