@@ -6,14 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 
 public class CameraActivity extends AppCompatActivity {
 
     private static final int CAMERA_PIC_REQUEST = 2;
-    private static final String TAG = "camera";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

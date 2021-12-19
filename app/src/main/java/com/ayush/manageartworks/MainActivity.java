@@ -1,17 +1,13 @@
 package com.ayush.manageartworks;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.pdf.PdfRenderer;
-import android.os.Bundle;
-
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 import android.util.Log;
@@ -19,26 +15,32 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
-import com.chaquo.python.PyObject;
-import com.chaquo.python.Python;
-import com.chaquo.python.android.AndroidPlatform;
 import com.pdftron.pdf.config.ViewerConfig;
 import com.pdftron.pdf.controls.DocumentActivity;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
-    PyObject pyObject;
+    /**
+     * source : The image loaded/captured from camera
+     * target: the pdf (converted to bitmap) selected by user.
+     */
+    private static  Bitmap source;
+    private static Bitmap target;
     private static final int LOAD_REQUEST_CODE = 1;
     private static final String TAG = "Main Activity Log";
-    public static Context context;
+    private Context context;
     ViewerConfig config;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,13 +48,26 @@ public class MainActivity extends AppCompatActivity {
         context = getApplicationContext();
         config = new ViewerConfig.Builder().openUrlCachePath(this.getCacheDir().getAbsolutePath()).build();
         // [*****] start python scripts [*****]
-        runPython(this);
+        PythonExecutor pyExec = new PythonExecutor(this);
+        pyExec.testPython();
     }
+
+    /**
+     * Loads the requested pdf from local storage using pdfTron; Opens pdf selection activity
+     * @param view : View view
+     */
     public void loadPdfFromStorage(View view) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("application/pdf");
         startActivityForResult(intent, LOAD_REQUEST_CODE);
     }
+
+    /**
+     * Activity Result Method : Loads the requested pdf from local storage using pdfTron
+     * @param requestCode : to verify the request code
+     * @param resultCode : to verify the result code
+     * @param data : data of type android.context.Intent containing selected pdf file by user
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -71,16 +86,30 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    /**
+     * Loads a demo Pdf from url and displays using pdfTron pdf viewer
+     * @param view
+     */
     public void loadDemoPdf(View view) {
         final Uri fileLink = Uri.parse("https://pdftron.s3.amazonaws.com/downloads/pl/PDFTRON_mobile_about.pdf");
         DocumentActivity.openDocument(this, fileLink, config);
     }
-    //Resonsible to open camera and show image preview
+
+    /**
+     * Responsible to open camera and show image preview
+     * @param view
+     */
     public void captureImage(View view) {
         Intent intent = new Intent(this, CameraActivity.class);
         startActivity(intent);
     }
-    //converts pdf to bitmap arraylist
+
+    /**
+     * Takes File (pdf file) as the parameter and return the Bitmap converted from the file
+     * @param pdfFile : The File of pdf to be converted
+     * @return ArrayList<Bitmap>: Returns an Arraylist of Bitmaps, where each Bitmap corrsponds to one page of pdf
+     */
     private ArrayList<Bitmap> pdfToBitmap(File pdfFile) {
         ArrayList<Bitmap> bitmaps = new ArrayList<>();
         try {
@@ -96,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
                 bitmaps.add(bitmap);
                 // close the page
                 page.close();
-
             }
             // close the renderer
             renderer.close();
@@ -108,7 +136,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //returns file at given uri
+    /**
+     *
+     * @param uri : The Uri of pdf file to be converted to a java.io.File instance
+     * @return File file: The pdf file from the uri
+     * @throws IOException
+     */
     @SuppressLint("Range")
     private File toFile(Uri uri) throws IOException {
         String displayName = "";
@@ -129,16 +162,5 @@ public class MainActivity extends AppCompatActivity {
         InputStream inputStream = getContentResolver().openInputStream(uri);
         FileUtils.copyInputStreamToFile(inputStream, file);
         return file;
-    }
-
-    //*****Python*****//
-    public void runPython(Context context) {
-        if (!Python.isStarted()) {
-            Python.start(new AndroidPlatform(context));
-        }
-        Python py = Python.getInstance();
-        pyObject = py.getModule("hello_world");
-        String msg = pyObject.callAttr("hello").toString();
-        Toast.makeText(context, "This came from pytgon :: " + msg, Toast.LENGTH_SHORT).show();
     }
 }
