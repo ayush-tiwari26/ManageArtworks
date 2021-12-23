@@ -31,6 +31,8 @@ public class CameraActivity extends AppCompatActivity {
             Bitmap image = (Bitmap) data.getExtras().get("data");
             ImageView imageview = (ImageView) findViewById(R.id.imageView); //sets imageview as the bitmap
             imageview.setImageBitmap(image);
+            MainActivity.source = image;
+            finish();
         }
     }
 }

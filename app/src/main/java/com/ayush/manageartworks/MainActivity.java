@@ -34,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
      * source : The image loaded/captured from camera
      * target: the pdf (converted to bitmap) selected by user.
      */
-    private static  Bitmap source;
-    private static Bitmap target;
+    protected static  Bitmap source;
+    protected static Bitmap target;
     private static final int LOAD_REQUEST_CODE = 1;
     private static final String TAG = "Main Activity Log";
     private Context context;
@@ -50,6 +50,13 @@ public class MainActivity extends AppCompatActivity {
         // [*****] start python scripts [*****]
         PythonExecutor pyExec = new PythonExecutor(this);
         pyExec.testPython();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Toast.makeText(this, "Image Got", Toast.LENGTH_SHORT ).show();
+
     }
 
     /**
@@ -78,8 +85,10 @@ public class MainActivity extends AppCompatActivity {
             try {
                 File pdf = toFile(uri);
                 Bitmap selectedPdfBitmap = pdfToBitmap(pdf).get(0);
-                ImageView selectedPdfImage = (ImageView) findViewById(R.id.selectedPdfImageView);
+                ImageView selectedPdfImage = (ImageView) findViewById(R.id.targetImageView);
                 selectedPdfImage.setImageBitmap(selectedPdfBitmap);
+                target = selectedPdfBitmap;
+
             } catch (IOException e) {
                 Toast.makeText(context, "Error converting pdf uri to pdf", Toast.LENGTH_SHORT).show();
                 DocumentActivity.openDocument(this, uri, config);
@@ -88,17 +97,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Loads a demo Pdf from url and displays using pdfTron pdf viewer
-     * @param view
-     */
-    public void loadDemoPdf(View view) {
-        final Uri fileLink = Uri.parse("https://pdftron.s3.amazonaws.com/downloads/pl/PDFTRON_mobile_about.pdf");
-        DocumentActivity.openDocument(this, fileLink, config);
-    }
-
-    /**
      * Responsible to open camera and show image preview
-     * @param view
+     * @param view : View view
      */
     public void captureImage(View view) {
         Intent intent = new Intent(this, CameraActivity.class);
@@ -133,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return bitmaps;
-
     }
 
     /**
@@ -142,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
      * @return File file: The pdf file from the uri
      * @throws IOException
      */
+    @SuppressWarnings("JavaDoc")
     @SuppressLint("Range")
     private File toFile(Uri uri) throws IOException {
         String displayName = "";
@@ -163,4 +163,14 @@ public class MainActivity extends AppCompatActivity {
         FileUtils.copyInputStreamToFile(inputStream, file);
         return file;
     }
+
+    /**
+     * Loads a demo Pdf from url and displays using pdfTron pdf viewer
+     * @param view : View view
+     */
+    public void loadDemoPdf(View view) {
+        final Uri fileLink = Uri.parse("https://pdftron.s3.amazonaws.com/downloads/pl/PDFTRON_mobile_about.pdf");
+        DocumentActivity.openDocument(this, fileLink, config);
+    }
+
 }
