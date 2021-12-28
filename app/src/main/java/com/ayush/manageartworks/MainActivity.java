@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -24,6 +25,7 @@ import com.pdftron.pdf.controls.DocumentActivity;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,16 +49,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
         config = new ViewerConfig.Builder().openUrlCachePath(this.getCacheDir().getAbsolutePath()).build();
-        // [*****] start python scripts [*****]
-        PythonExecutor pyExec = new PythonExecutor(this);
-        pyExec.testPython();
-    }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        Toast.makeText(this, "Image Got", Toast.LENGTH_SHORT ).show();
-
+//        // [*****] start python scripts [*****]
+//        PythonExecutor pyExec = new PythonExecutor(this);
+//        pyExec.testPython();
     }
 
     /**
@@ -88,7 +84,8 @@ public class MainActivity extends AppCompatActivity {
                 ImageView selectedPdfImage = (ImageView) findViewById(R.id.targetImageView);
                 selectedPdfImage.setImageBitmap(selectedPdfBitmap);
                 target = selectedPdfBitmap;
-
+                //Setting Target Image On Pdf Selection
+                ((ImageView)(findViewById(R.id.targetImageView))).setImageBitmap(target);
             } catch (IOException e) {
                 Toast.makeText(context, "Error converting pdf uri to pdf", Toast.LENGTH_SHORT).show();
                 DocumentActivity.openDocument(this, uri, config);
@@ -103,6 +100,15 @@ public class MainActivity extends AppCompatActivity {
     public void captureImage(View view) {
         Intent intent = new Intent(this, CameraActivity.class);
         startActivity(intent);
+
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        //Toast.makeText(this, "Image Got", Toast.LENGTH_SHORT ).show();
+        //Setting Source Image View On Main Activity Restart
+        ((ImageView)(findViewById(R.id.sourceImageView))).setImageBitmap(source);
     }
 
     /**
@@ -173,4 +179,35 @@ public class MainActivity extends AppCompatActivity {
         DocumentActivity.openDocument(this, fileLink, config);
     }
 
+    /**
+     * Function to start comparison between both bitmaps(images)
+     * @param view
+     */
+    public void startComparison(View view) {
+        if(source==null){
+            Toast.makeText(context, "Select A Source To Compare", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(target==null){
+            Toast.makeText(context, "Select A Target To Compare", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String sourceStr = bitmapToString(source);
+        String targetStr = bitmapToString(target);
+
+        //Starting python executor method to pass data to python script
+        PythonExecutor pyExec = new PythonExecutor(this);
+        pyExec.startComparison(sourceStr, targetStr);
+    }
+
+    /**
+     * Converts Bitmap to Byte Array
+     * @param map : Bitmap of image
+     * @return returns byte array of bitmap
+     */
+    public String bitmapToString(Bitmap map){
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        map.compress(Bitmap.CompressFormat.JPEG, 70, stream);
+        return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
+    }
 }

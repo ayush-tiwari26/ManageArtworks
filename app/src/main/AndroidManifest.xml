@@ -7,8 +7,6 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
 
-
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,6 +15,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ManageArtworks"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".BitmapComparison"
+            android:exported="false"
+            android:label="@string/title_activity_bitmap_comparison"
+            android:theme="@style/Theme.ManageArtworks.NoActionBar" />
         <activity
             android:name=".CameraActivity"
             android:exported="false" />

@@ -6,6 +6,22 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <Button
+        android:id="@+id/compare"
+        android:layout_width="wrap_content"
+        android:layout_height="55dp"
+        android:backgroundTint="#35CC1A"
+        android:onClick="startComparison"
+        android:shadowColor="#9E5252"
+        android:text="Compare"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.903"
+        app:rippleColor="#8153DD" />
+
     <TextView
         android:id="@+id/targetTextView"
         android:layout_width="110dp"
@@ -25,7 +41,7 @@
         android:layout_height="129dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.153"
+        app:layout_constraintHorizontal_bias="0.149"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.139"
@@ -34,9 +50,10 @@
     <Button
         android:id="@+id/loadPdfBtn"
         android:layout_width="275dp"
-        android:layout_height="52dp"
+        android:layout_height="55dp"
+        android:backgroundTint="#0659FF"
         android:onClick="loadPdfFromStorage"
-        android:text="Load from Storage"
+        android:text="Load Target from Pdf"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -46,10 +63,11 @@
 
     <Button
         android:id="@+id/demoPdfBtn"
-        android:layout_width="186dp"
-        android:layout_height="50dp"
+        android:layout_width="263dp"
+        android:layout_height="55dp"
+        android:backgroundTint="#0659FF"
         android:onClick="loadDemoPdf"
-        android:text="Load Demo Pdf"
+        android:text="Load Demo Pdf Source"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
@@ -60,14 +78,17 @@
     <Button
         android:id="@+id/captureImage"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="55dp"
+        android:backgroundTint="#0659FF"
         android:onClick="captureImage"
-        android:text="Capture Image"
+        android:shadowColor="#9E5252"
+        android:text="Capture Source"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.534" />
+        app:layout_constraintVertical_bias="0.534"
+        app:rippleColor="#8153DD" />
 
     <ImageView
         android:id="@+id/targetImageView"
