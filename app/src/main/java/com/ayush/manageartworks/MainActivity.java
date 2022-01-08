@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.pdf.PdfRenderer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -36,11 +38,13 @@ public class MainActivity extends AppCompatActivity {
      * source : The image loaded/captured from camera
      * target: the pdf (converted to bitmap) selected by user.
      */
+    protected static PythonExecutor pyExec;
     protected static  Bitmap source;
     protected static Bitmap target;
     private static final int LOAD_REQUEST_CODE = 1;
     private static final String TAG = "Main Activity Log";
-    private Context context;
+    public static Context context;
+    public static TextView ssimTextView;
     ViewerConfig config;
 
     @Override
@@ -48,11 +52,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
+        ssimTextView = (TextView)findViewById(R.id.ssimTextView);
+        ssimTextView.setVisibility(View.INVISIBLE);
         config = new ViewerConfig.Builder().openUrlCachePath(this.getCacheDir().getAbsolutePath()).build();
-
+        pyExec = new PythonExecutor(this);
 //        // [*****] start python scripts [*****]
 //        PythonExecutor pyExec = new PythonExecutor(this);
 //        pyExec.testPython();
+
     }
 
     /**
@@ -100,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
     public void captureImage(View view) {
         Intent intent = new Intent(this, CameraActivity.class);
         startActivity(intent);
-
     }
 
     @Override
@@ -196,7 +202,6 @@ public class MainActivity extends AppCompatActivity {
         String targetStr = bitmapToString(target);
 
         //Starting python executor method to pass data to python script
-        PythonExecutor pyExec = new PythonExecutor(this);
         pyExec.startComparison(sourceStr, targetStr);
     }
 
@@ -209,5 +214,23 @@ public class MainActivity extends AppCompatActivity {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         map.compress(Bitmap.CompressFormat.JPEG, 70, stream);
         return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
+    }
+
+    /**
+     * Called as soon as user clicks on source or target image
+     * runs python code for object detection in given bitmap
+     * @param view
+     */
+    public void startObjectDetection(View view) {
+        try{
+            Bitmap image = ((BitmapDrawable)((ImageView)view).getDrawable()).getBitmap();
+            ((ImageView)view).setAlpha(0.5f);
+            String byteStr = bitmapToString(image);
+            //Starting python executor method to pass data to python script
+            //pyExec.detectObject(byteStr);
+            Detect detect = new Detect(image);
+        }catch(Exception e){
+            Toast.makeText(context, "Error loading Image :: "+e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
     }
 }
